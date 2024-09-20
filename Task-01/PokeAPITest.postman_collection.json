@@ -1,0 +1,169 @@
+{
+	"info": {
+		"_postman_id": "05b871af-bd49-4f4e-8146-e68ac06a41c4",
+		"name": "PokeAPITest",
+		"description": "### About this collection\n\nStartFragmentThis collection helps you test and explore the PokéAPI, allowing you to retrieve Pokémon data such as individual Pokémon details and lists of species.EndFragment  \n  \n\n### Using the collection\n\nStartFragment**Step 1**: Send requests to fetch data from the PokéAPI, such as the details of specific Pokémon like _Dialga_ (`/pokemon/dialga`) or a list of the first 151 Pokémon (`/pokemon?limit=151&offset=0`). Review the response and performance metrics.  \n**Step 2**: Adjust the URLs for different Pokémon or endpoints to explore additional data, such as abilities, types, or moves.  \n**Step 3**: Customize the tests in the \"Tests\" tab to validate the responses, performance, and data structure. EndFragment  \n  \n\n[](https://postman.postman.co/documentation/24552533-5bead607-0197-4e1d-87d4-3160bc7631c1?entity=&branch=&version=)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "13383587",
+		"_collection_link": "https://planetary-equinox-679736.postman.co/workspace/API-Testing-with-Postman-and-py~259e84a7-c26f-48a6-a8f0-763eb4172d22/collection/13383587-05b871af-bd49-4f4e-8146-e68ac06a41c4?action=share&source=collection_link&creator=13383587"
+	},
+	"item": [
+		{
+			"name": "GetFirstGenerationPokemons",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validate that the response code should be 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Validate that the response is json object",
+							"pm.test(\"Response is a json object\", function () {",
+							"    pm.expect(pm.response.json()).to.be.an('object');",
+							"});",
+							"",
+							"// Validate that the response has an arg object",
+							"pm.test(\"Contains 151 Pokémon\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.results.length).to.eql(151);",
+							"});",
+							"",
+							"//check the first pokemno is bulbasaur",
+							"pm.test(\"First Pokémon is Bulbasaur\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.results[0].name).to.eql(\"bulbasaur\");",
+							"});",
+							"",
+							"// all data of result arrays has the property of name and url",
+							"pm.test(\"All Pokémon have name and url properties\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.results.forEach(function(pokemon) {",
+							"        pm.expect(pokemon).to.have.property(\"name\");",
+							"        pm.expect(pokemon).to.have.property(\"url\");",
+							"    });",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}?limit=151&offset=0",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "151"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						}
+					]
+				},
+				"description": "The tests in this request validate that:\n\n- the response code is 200\n- the response is a JSON object\n- the response has an 'arg' object\n- the response has 'headers' object\n- the response has a 'URL' property"
+			},
+			"response": []
+		},
+		{
+			"name": "GetDialgaName",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the id Pokemon is Equals to 483\r",
+							"pm.test(\"The Pokémon ID is 483\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(483);\r",
+							"});\r",
+							"\r",
+							"// Check if the pokemon is a Steel Type\r",
+							"pm.test(\"The Pokémon has a steel type\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var hasSteelType = jsonData.types.some(function(typeInfo) {\r",
+							"        return typeInfo.type.name === 'steel';\r",
+							"    });\r",
+							"    pm.expect(hasSteelType).to.be.true;\r",
+							"});\r",
+							"\r",
+							"//Check the size of the response\r",
+							"pm.test(\"Response size is less than 200KB\", function () {\r",
+							"    var responseSize = pm.response.responseSize / 1024; // Convertir a KB\r",
+							"    pm.expect(responseSize).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"//Test response time\r",
+							"pm.test(\"Server responds in less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"// The body is not empty\r",
+							"pm.test(\"Response body is not empty\", function () {\r",
+							"    pm.expect(pm.response.text()).to.not.be.empty;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{baseUrl}}/dialga",
+				"description": "The tests in the request validate the response code and the data returned in the response is the same as the one being sent."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://pokeapi.co/api/v2/pokemon"
+		}
+	]
+}
